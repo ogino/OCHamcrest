@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsCollectionOnlyContaining.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -11,18 +11,19 @@
     // OCHamcrest
 #import "HCAnyOf.h"
 #import "HCDescription.h"
+#import "HCRequireNonNilObject.h"
 #import "HCWrapInMatcher.h"
 
 
 @implementation HCIsCollectionOnlyContaining
 
-+ (HCIsCollectionOnlyContaining*) isCollectionOnlyContaining:(id<HCMatcher>)aMatcher
++ (id)isCollectionOnlyContaining:(id<HCMatcher>)aMatcher
 {
-    return [[[HCIsCollectionOnlyContaining alloc] initWithMatcher:aMatcher] autorelease];
+    return [[[self alloc] initWithMatcher:aMatcher] autorelease];
 }
 
 
-- (id) initWithMatcher:(id<HCMatcher>)aMatcher
+- (id)initWithMatcher:(id<HCMatcher>)aMatcher
 {
     self = [super init];
     if (self != nil)
@@ -31,15 +32,14 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [matcher release];
-    
     [super dealloc];
 }
 
 
-- (BOOL) matches:(id)collection
+- (BOOL)matches:(id)collection
 {
     if (![collection conformsToProtocol:@protocol(NSFastEnumeration)])
         return NO;
@@ -56,18 +56,20 @@
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
     [[description appendText:@"a collection containing items matching "]
-                    appendDescriptionOf:matcher];
+                  appendDescriptionOf:matcher];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_onlyContains(id items, ...)
 {
-    NSMutableArray* matchers = [NSMutableArray arrayWithObject:HCWrapInMatcher(items)];
+    HCRequireNonNilObject(items);
+    NSMutableArray *matchers = [NSMutableArray arrayWithObject:HCWrapInMatcher(items)];
     
     va_list args;
     va_start(args, items);

@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsAnything.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -14,26 +14,26 @@
 
 @implementation HCIsAnything
 
-+ (HCIsAnything*) isAnything
++ (id)isAnything
 {
-    return [[[HCIsAnything alloc] init] autorelease];
+    return [[[self alloc] init] autorelease];
 }
 
 
-+ (HCIsAnything*) isAnythingWithDescription:(NSString*)aDescription
++ (id)isAnythingWithDescription:(NSString *)aDescription
 {
-    return [[[HCIsAnything alloc] initWithDescription:aDescription] autorelease];
+    return [[[self alloc] initWithDescription:aDescription] autorelease];
 }
 
 
-- (id) init
+- (id)init
 {
     [self initWithDescription:@"ANYTHING"];
     return self;
 }
 
 
-- (id) initWithDescription:(NSString*)aDescription
+- (id)initWithDescription:(NSString *)aDescription
 {
     self = [super init];
     if (self != nil)
@@ -42,27 +42,27 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [description release];
-    
     [super dealloc];
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     return YES;
 }
 
 
-- (void) describeTo:(id<HCDescription>)aDescription
+- (void)describeTo:(id<HCDescription>)aDescription
 {
     [aDescription appendText:description];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_anything()
 {
@@ -70,7 +70,7 @@ OBJC_EXPORT id<HCMatcher> HC_anything()
 }
 
 
-OBJC_EXPORT id<HCMatcher> HC_anythingWithDescription(NSString* description)
+OBJC_EXPORT id<HCMatcher> HC_anythingWithDescription(NSString *description)
 {
     return [HCIsAnything isAnythingWithDescription:description];
 }

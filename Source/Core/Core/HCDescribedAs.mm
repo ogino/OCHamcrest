@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCDescribedAs.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -20,10 +20,10 @@ using namespace std;
 
 namespace {
 
-/*
+/**
     Splits string into decimal number (-1 if not found) and remaining string.
-*/
-pair<int, NSString*> separate(NSString* component)
+ */
+pair<int, NSString*> separate(NSString *component)
 {
     unsigned int index = 0;
     bool gotIndex = false;
@@ -47,22 +47,23 @@ pair<int, NSString*> separate(NSString* component)
 
 }   // namespace
 
+//--------------------------------------------------------------------------------------------------
 
 @implementation HCDescribedAs
 
-+ (HCDescribedAs*) describedAs:(NSString*)description
-                    forMatcher:(id<HCMatcher>)aMatcher
-                    overValues:(NSArray*)templateValues
++ (id)describedAs:(NSString *)description
+       forMatcher:(id<HCMatcher>)aMatcher
+       overValues:(NSArray *)templateValues
 {
-    return [[[HCDescribedAs alloc] initWithDescription: description
-                                            forMatcher: aMatcher
-                                            overValues: templateValues] autorelease];
+    return [[[self alloc] initWithDescription:description
+                                   forMatcher:aMatcher
+                                   overValues:templateValues] autorelease];
 }
 
 
-- (id) initWithDescription:(NSString*)description
+- (id)initWithDescription:(NSString *)description
                 forMatcher:(id<HCMatcher>)aMatcher
-                overValues:(NSArray*)templateValues
+                overValues:(NSArray *)templateValues
 {
     self = [super init];
     if (self != nil)
@@ -75,7 +76,7 @@ pair<int, NSString*> separate(NSString* component)
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [values release];
     [matcher release];
@@ -85,17 +86,23 @@ pair<int, NSString*> separate(NSString* component)
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     return [matcher matches:item];
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeMismatchOf:(id)item to:(id<HCDescription>)mismatchDescription
 {
-    NSArray* components = [descriptionTemplate componentsSeparatedByString:@"%"];
+    [matcher describeMismatchOf:item to:mismatchDescription];
+}
+
+
+- (void)describeTo:(id<HCDescription>)description
+{
+    NSArray *components = [descriptionTemplate componentsSeparatedByString:@"%"];
     bool firstTime = true;
-    for (NSString* oneComponent in components)
+    for (NSString *oneComponent in components)
     {
         if (firstTime)
         {
@@ -109,7 +116,7 @@ pair<int, NSString*> separate(NSString* component)
                 [[description appendText:@"%"] appendText:oneComponent];
             else
             {
-                [description appendValue:[values objectAtIndex:parseIndex.first]];
+                [description appendDescriptionOf:[values objectAtIndex:parseIndex.first]];
                 [description appendText:parseIndex.second];
             }
         }
@@ -118,10 +125,11 @@ pair<int, NSString*> separate(NSString* component)
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
-OBJC_EXPORT id<HCMatcher> HC_describedAs(NSString* description, id<HCMatcher> matcher, ...)
+OBJC_EXPORT id<HCMatcher> HC_describedAs(NSString *description, id<HCMatcher> matcher, ...)
 {
-    NSMutableArray* valueList = [NSMutableArray array];
+    NSMutableArray *valueList = [NSMutableArray array];
     
     va_list args;
     va_start(args, matcher);

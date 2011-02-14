@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsCollectionContaining.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -11,18 +11,19 @@
     // OCHamcrest
 #import "HCAllOf.h"
 #import "HCDescription.h"
+#import "HCRequireNonNilObject.h"
 #import "HCWrapInMatcher.h"
 
 
 @implementation HCIsCollectionContaining
 
-+ (HCIsCollectionContaining*) isCollectionContaining:(id<HCMatcher>)anElementMatcher
++ (id)isCollectionContaining:(id<HCMatcher>)anElementMatcher
 {
-    return [[[HCIsCollectionContaining alloc] initWithMatcher:anElementMatcher] autorelease];
+    return [[[self alloc] initWithMatcher:anElementMatcher] autorelease];
 }
 
 
-- (id) initWithMatcher:(id<HCMatcher>)anElementMatcher
+- (id)initWithMatcher:(id<HCMatcher>)anElementMatcher
 {
     self = [super init];
     if (self != nil)
@@ -31,15 +32,14 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [elementMatcher release];
-    
     [super dealloc];
 }
 
 
-- (BOOL) matches:(id)collection
+- (BOOL)matches:(id)collection
 {
     if (![collection conformsToProtocol:@protocol(NSFastEnumeration)])
         return NO;
@@ -53,24 +53,26 @@
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
     [[description appendText:@"a collection containing "]
-                    appendDescriptionOf:elementMatcher];
+                  appendDescriptionOf:elementMatcher];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_hasItem(id item)
 {
+    HCRequireNonNilObject(item);
     return [HCIsCollectionContaining isCollectionContaining:HCWrapInMatcher(item)];
 }
 
 
 OBJC_EXPORT id<HCMatcher> HC_hasItems(id items, ...)
 {
-    NSMutableArray* matchers = [NSMutableArray arrayWithObject:HC_hasItem(items)];
+    NSMutableArray *matchers = [NSMutableArray arrayWithObject:HC_hasItem(items)];
     
     va_list args;
     va_start(args, items);

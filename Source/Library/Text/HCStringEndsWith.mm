@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCStringEndsWith.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -14,13 +14,13 @@
 
 @implementation HCStringEndsWith
 
-+ (HCStringEndsWith*) stringEndsWith:(NSString*)aSubstring
++ (id)stringEndsWith:(NSString *)aSubstring
 {
-    return [[[HCStringEndsWith alloc] initWithSubstring:aSubstring] autorelease];
+    return [[[self alloc] initWithSubstring:aSubstring] autorelease];
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     if (![item respondsToSelector:@selector(hasSuffix:)])
         return NO;
@@ -28,20 +28,17 @@
     return [item hasSuffix:substring];
 }
 
-@end
 
-
-@implementation HCStringEndsWith (SubclassResponsibility)
-
-- (NSString*) relationship
+- (NSString *)relationship
 {
     return @"ending with";
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
-OBJC_EXPORT id<HCMatcher> HC_endsWith(NSString* aSubstring)
+OBJC_EXPORT id<HCMatcher> HC_endsWith(NSString *aSubstring)
 {
     return [HCStringEndsWith stringEndsWith:aSubstring];
 }

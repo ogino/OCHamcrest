@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsCloseTo.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -18,43 +18,58 @@ using namespace std;
 
 @implementation HCIsCloseTo
 
-+ (HCIsCloseTo*) isCloseTo:(double)aValue within:(double)anError
++ (id)isCloseTo:(double)aValue within:(double)aDelta
 {
-    return [[[HCIsCloseTo alloc] initWithValue:aValue error:anError] autorelease];
+    return [[[self alloc] initWithValue:aValue delta:aDelta] autorelease];
 }
 
 
-- (id) initWithValue:(double)aValue error:(double)anError
+- (id)initWithValue:(double)aValue delta:(double)aDelta
 {
     self = [super init];
     if (self != nil)
     {
         value = aValue;
-        error = anError;
+        delta = aDelta;
     }
     return self;
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
-    if (![item respondsToSelector:@selector(doubleValue)])
+    if (![item isKindOfClass:[NSNumber class]])
         return NO;
     
-    return abs([item doubleValue] - value) <= error;
+    return fabs([item doubleValue] - value) <= delta;
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeMismatchOf:(id)item to:(id<HCDescription>)mismatchDescription
+{
+    if (![item isKindOfClass:[NSNumber class]])
+        [super describeMismatchOf:item to:mismatchDescription];
+    else
+    {
+        double actualDelta = fabs([item doubleValue] - value);
+        [[[mismatchDescription appendDescriptionOf:item]
+                               appendText:@" differed by "]
+                               appendDescriptionOf:[NSNumber numberWithDouble:actualDelta]];
+    }
+}
+
+
+- (void)describeTo:(id<HCDescription>)description
 {
     [[[[description appendText:@"a numeric value within "]
-                    appendValue:[NSNumber numberWithDouble:error]]
+                    appendDescriptionOf:[NSNumber numberWithDouble:delta]]
                     appendText:@" of "]
-                    appendValue:[NSNumber numberWithDouble:value]];
+                    appendDescriptionOf:[NSNumber numberWithDouble:value]];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_closeTo(double aValue, double anError)
 {

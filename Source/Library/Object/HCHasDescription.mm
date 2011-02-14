@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCHasDescription.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -15,18 +15,18 @@
 
 @implementation HCHasDescription
 
-+ (HCHasDescription*) hasDescription:(id<HCMatcher>)descriptionMatcher
++ (id)hasDescription:(id<HCMatcher>)descriptionMatcher
 {
-    return [[[HCHasDescription alloc] initWithDescription:descriptionMatcher] autorelease];
+    return [[[self alloc] initWithDescription:descriptionMatcher] autorelease];
 }
 
 
-- (id) initWithDescription:(id<HCMatcher>)descriptionMatcher;
+- (id)initWithDescription:(id<HCMatcher>)descriptionMatcher;
 {
-    NSInvocation* anInvocation = [HCInvocationMatcher
-                                        createInvocationForSelector:@selector(description)
-                                        onClass:[NSObject class]];
+    NSInvocation *anInvocation = [HCInvocationMatcher invocationForSelector:@selector(description)
+                                                                    onClass:[NSObject class]];
     self = [super initWithInvocation:anInvocation matching:descriptionMatcher];
+    shortMismatchDescription = YES;
     return self;
 }
 

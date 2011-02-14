@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsNot.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -15,13 +15,13 @@
 
 @implementation HCIsNot
 
-+ (HCIsNot*) isNot:(id<HCMatcher>)aMatcher
++ (id)isNot:(id<HCMatcher>)aMatcher
 {
-    return [[[HCIsNot alloc] initNot:aMatcher] autorelease];
+    return [[[self alloc] initNot:aMatcher] autorelease];
 }
 
 
-- (id) initNot:(id<HCMatcher>)aMatcher
+- (id)initNot:(id<HCMatcher>)aMatcher
 {
     self = [super init];
     if (self != nil)
@@ -30,7 +30,7 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [matcher release];
     
@@ -38,19 +38,20 @@
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     return ![matcher matches:item];
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
     [[description appendText:@"not "] appendDescriptionOf:matcher];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_isNot(id matcherOrValue)
 {

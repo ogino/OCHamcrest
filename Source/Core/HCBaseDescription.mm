@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCBaseDescription.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -14,27 +14,49 @@
 
 
 @interface HCBaseDescription(Private)
-- (void) toCSyntaxString:(NSString*)unformatted;
-- (void) toCSyntax:(unichar)ch;
+- (void)toCSyntaxString:(NSString *)unformatted;
+- (void)toCSyntax:(unichar)ch;
 @end
 
 @implementation HCBaseDescription
 
-- (id<HCDescription>) appendText:(NSString*)text
+- (id<HCDescription>)appendText:(NSString *)text
 {
     [self append:text];
     return self;
 }
 
 
-- (id<HCDescription>) appendDescriptionOf:(id<HCSelfDescribing>)value;
+- (id<HCDescription>)appendDescriptionOf:(id)value;
 {
-    [value describeTo:self];
+    if (value == nil)
+        [self append:@"nil"];
+    else if ([value conformsToProtocol:@protocol(HCSelfDescribing)])
+        [value describeTo:self];
+    else if ([value isKindOfClass:[NSString class]])
+        [self toCSyntaxString:value];
+    else
+    {
+        NSString *description = [value description];
+        NSUInteger descriptionLen = [description length];
+        if (descriptionLen > 0
+            && [description characterAtIndex:0] == '<'
+            && [description characterAtIndex:descriptionLen - 1] == '>')
+        {
+            [self append:description];
+        }
+        else
+        {
+            [self append:@"<"];
+            [self append:[value description]];
+            [self append:@">"];
+        }
+    }
     return self;
 }
 
 
-- (id<HCDescription>) appendValue:(id)value
+- (id<HCDescription>)appendValue:(id)value
 {
     if (value == nil)
         [self append:@"nil"];
@@ -50,8 +72,10 @@
 }
 
 
-- (id<HCDescription>) appendList:(NSArray*)values
-                        start:(NSString*)start separator:(NSString*)separator end:(NSString*)end
+- (id<HCDescription>)appendList:(NSArray *)values
+                           start:(NSString *)start
+                       separator:(NSString *)separator
+                             end:(NSString *)end
 {
     BOOL separate = NO;
     
@@ -72,7 +96,7 @@
 
 @implementation HCBaseDescription (Private)
 
-- (void) toCSyntaxString:(NSString*)unformatted
+- (void)toCSyntaxString:(NSString *)unformatted
 {
     [self append:@"\""];
     NSUInteger length = [unformatted length];
@@ -82,7 +106,7 @@
 }
 
 
-- (void) toCSyntax: (unichar)ch
+- (void)toCSyntax:(unichar)ch
 {
     switch (ch)
     {

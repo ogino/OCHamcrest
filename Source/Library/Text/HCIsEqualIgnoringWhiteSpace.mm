@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsEqualIgnoringWhiteSpace.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -10,7 +10,7 @@
 
     // OCHamcrest
 #import "HCDescription.h"
-#import "HCRequireNonNilString.h"
+#import "HCRequireNonNilObject.h"
 
     // C++
 #import <cctype>
@@ -19,7 +19,7 @@ using namespace std;
 
 namespace {
 
-void removeTrailingSpace(NSMutableString* string)
+void removeTrailingSpace(NSMutableString *string)
 {
     NSUInteger length = [string length];
     if (length > 0)
@@ -31,10 +31,10 @@ void removeTrailingSpace(NSMutableString* string)
 }
 
 
-NSMutableString* stripSpace(NSString* string)
+NSMutableString *stripSpace(NSString *string)
 {
     NSUInteger length = [string length];
-    NSMutableString* result = [NSMutableString stringWithCapacity:length];
+    NSMutableString *result = [NSMutableString stringWithCapacity:length];
     bool lastWasSpace = true;
     for (NSUInteger charIndex = 0; charIndex < length; ++charIndex)
     {
@@ -58,18 +58,19 @@ NSMutableString* stripSpace(NSString* string)
 
 }   // namespace
 
+//--------------------------------------------------------------------------------------------------
 
 @implementation HCIsEqualIgnoringWhiteSpace
 
-+ (HCIsEqualIgnoringWhiteSpace*) isEqualIgnoringWhiteSpace:(NSString*)aString
++ (id)isEqualIgnoringWhiteSpace:(NSString *)aString
 {
-    return [[[HCIsEqualIgnoringWhiteSpace alloc] initWithString:aString] autorelease];
+    return [[[self alloc] initWithString:aString] autorelease];
 }
 
 
-- (id) initWithString:(NSString*)aString
+- (id)initWithString:(NSString *)aString
 {
-    HCRequireNonNilString(aString);
+    HCRequireNonNilObject(aString);
     
     self = [super init];
     if (self != nil)
@@ -81,7 +82,7 @@ NSMutableString* stripSpace(NSString* string)
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [strippedString release];
     [originalString release];
@@ -90,7 +91,7 @@ NSMutableString* stripSpace(NSString* string)
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     if (![item isKindOfClass:[NSString class]])
         return NO;
@@ -99,17 +100,17 @@ NSMutableString* stripSpace(NSString* string)
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
-    [[[description appendText:@"equalToIgnoringWhiteSpace("]
-                    appendValue:originalString]
-                    appendText:@")"];
+    [[description appendDescriptionOf:originalString]
+                  appendText:@" ignoring whitespace"];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
-OBJC_EXPORT id<HCMatcher> HC_equalToIgnoringWhiteSpace(NSString* string)
+OBJC_EXPORT id<HCMatcher> HC_equalToIgnoringWhiteSpace(NSString *string)
 {
     return [HCIsEqualIgnoringWhiteSpace isEqualIgnoringWhiteSpace:string];
 }

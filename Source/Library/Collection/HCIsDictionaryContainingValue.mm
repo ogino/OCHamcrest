@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsDictionaryContainingValue.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -10,18 +10,19 @@
 
     // OCHamcrest
 #import "HCDescription.h"
+#import "HCRequireNonNilObject.h"
 #import "HCWrapInMatcher.h"
 
 
 @implementation HCIsDictionaryContainingValue
 
-+ (HCIsDictionaryContainingValue*) isDictionaryContainingValue:(id<HCMatcher>)theValueMatcher
++ (id)isDictionaryContainingValue:(id<HCMatcher>)theValueMatcher
 {
-    return [[[HCIsDictionaryContainingValue alloc] initWithValueMatcher:theValueMatcher] autorelease];
+    return [[[self alloc] initWithValueMatcher:theValueMatcher] autorelease];
 }
 
 
-- (id) initWithValueMatcher:(id<HCMatcher>)theValueMatcher
+- (id)initWithValueMatcher:(id<HCMatcher>)theValueMatcher
 {
     self = [super init];
     if (self != nil)
@@ -30,15 +31,14 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [valueMatcher release];
-    
     [super dealloc];
 }
 
 
-- (BOOL) matches:(id)dict
+- (BOOL)matches:(id)dict
 {
     if ([dict respondsToSelector:@selector(allValues)])
     {
@@ -52,16 +52,18 @@
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
-    [[description appendText:@"dictionary with value "]
-                    appendDescriptionOf:valueMatcher];
+    [[description appendText:@"a dictionary containing value "]
+                  appendDescriptionOf:valueMatcher];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_hasValue(id matcherOrValue)
 {
+    HCRequireNonNilObject(matcherOrValue);
     return [HCIsDictionaryContainingValue isDictionaryContainingValue:HCWrapInMatcher(matcherOrValue)];
 }

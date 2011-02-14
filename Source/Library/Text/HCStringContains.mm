@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCStringContains.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -14,13 +14,13 @@
 
 @implementation HCStringContains
 
-+ (HCStringContains*) stringContains:(NSString*)aSubstring
++ (id)stringContains:(NSString *)aSubstring
 {
-    return [[[HCStringContains alloc] initWithSubstring:aSubstring] autorelease];
+    return [[[self alloc] initWithSubstring:aSubstring] autorelease];
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     if (![item respondsToSelector:@selector(rangeOfString:)])
         return NO;
@@ -28,20 +28,17 @@
     return [item rangeOfString:substring].location != NSNotFound;
 }
 
-@end
 
-
-@implementation HCStringContains (SubclassResponsibility)
-
-- (NSString*) relationship
+- (NSString *)relationship
 {
     return @"containing";
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
-OBJC_EXPORT id<HCMatcher> HC_containsString(NSString* aSubstring)
+OBJC_EXPORT id<HCMatcher> HC_containsString(NSString *aSubstring)
 {
     return [HCStringContains stringContains:aSubstring];
 }

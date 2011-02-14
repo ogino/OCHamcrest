@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCAnyOf.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -15,13 +15,13 @@
 
 @implementation HCAnyOf
 
-+ (HCAnyOf*) anyOf:(NSArray*)theMatchers
++ (id)anyOf:(NSArray *)theMatchers
 {
-    return [[[HCAnyOf alloc] initWithMatchers:theMatchers] autorelease];
+    return [[[self alloc] initWithMatchers:theMatchers] autorelease];
 }
 
 
-- (id) initWithMatchers:(NSArray*)theMatchers
+- (id)initWithMatchers:(NSArray *)theMatchers
 {
     self = [super init];
     if (self != nil)
@@ -30,15 +30,14 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [matchers release];
-    
     [super dealloc];
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     for (id<HCMatcher> oneMatcher in matchers)
     {
@@ -49,19 +48,20 @@
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
     [description appendList:matchers start:@"(" separator:@" or " end:@")"];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_anyOf(id<HCMatcher> matcher, ...)
 {
     va_list args;
     va_start(args, matcher);
-    NSArray* matcherList = HCCollectMatchers(matcher, args);
+    NSArray *matcherList = HCCollectMatchers(matcher, args);
     va_end(args);
     
     return [HCAnyOf anyOf:matcherList];

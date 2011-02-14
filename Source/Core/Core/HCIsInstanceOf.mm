@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsInstanceOf.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -10,18 +10,21 @@
 
     // OCHamcrest
 #import "HCDescription.h"
+#import "HCRequireNonNilObject.h"
 
 
 @implementation HCIsInstanceOf
 
-+ (HCIsInstanceOf*) isInstanceOf:(Class)type
++ (id)isInstanceOf:(Class)type
 {
-    return [[[HCIsInstanceOf alloc] initWithType:type] autorelease];
+    return [[[self alloc] initWithType:type] autorelease];
 }
 
 
-- (id) initWithType:(Class)type
+- (id)initWithType:(Class)type
 {
+    HCRequireNonNilObject(type);
+
     self = [super init];
     if (self != nil)
         theClass = type;
@@ -29,20 +32,21 @@
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     return [item isKindOfClass:theClass];
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
     [[description appendText:@"an instance of "]
-                    appendText:NSStringFromClass(theClass)];
+                  appendText:NSStringFromClass(theClass)];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_instanceOf(Class type)
 {

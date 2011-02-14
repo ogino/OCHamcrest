@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsSame.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -14,13 +14,13 @@
 
 @implementation HCIsSame
 
-+ (HCIsSame*) isSameAs:(id)anObject;
++ (id)isSameAs:(id)anObject;
 {
-    return [[[HCIsSame alloc] initSameAs:anObject] autorelease];
+    return [[[self alloc] initSameAs:anObject] autorelease];
 }
 
 
-- (id) initSameAs:(id)anObject
+- (id)initSameAs:(id)anObject
 {
     self = [super init];
     if (self != nil)
@@ -29,7 +29,7 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [object release];
     
@@ -37,28 +37,28 @@
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     return item == object;
 }
 
 
-- (void) describeMismatchOf:(id)item to:(id<HCDescription>)mismatchDescription
+- (void)describeMismatchOf:(id)item to:(id<HCDescription>)mismatchDescription
 {
-    [[mismatchDescription appendText:@"was "] appendValue:item];
-    [mismatchDescription appendText:[NSString stringWithFormat:@": 0x%0x", item]];
+    [[mismatchDescription appendText:[NSString stringWithFormat:@"was 0x%0x ", item]]
+                 appendDescriptionOf:item];
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
-    [[[description appendText:@"sameInstance("]
-                    appendValue:object]
-                    appendText:@")"];
+    [[description appendText:[NSString stringWithFormat:@"same instance as 0x%0x ", object]]
+         appendDescriptionOf:object];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_sameInstance(id object)
 {

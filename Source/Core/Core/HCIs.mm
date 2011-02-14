@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIs.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -15,13 +15,13 @@
 
 @implementation HCIs
 
-+ (HCIs*) is:(id<HCMatcher>)aMatcher
++ (id)is:(id<HCMatcher>)aMatcher
 {
-    return [[[HCIs alloc] initWithMatcher:aMatcher] autorelease];
+    return [[[self alloc] initWithMatcher:aMatcher] autorelease];
 }
 
 
-- (id) initWithMatcher:(id<HCMatcher>)aMatcher
+- (id)initWithMatcher:(id<HCMatcher>)aMatcher
 {
     self = [super init];
     if (self != nil)
@@ -30,27 +30,33 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [matcher release];
-    
     [super dealloc];
 }
 
 
-- (BOOL) matches:(id)item
+- (BOOL)matches:(id)item
 {
     return [matcher matches:item];
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeMismatchOf:(id)item to:(id<HCDescription>)mismatchDescription
 {
-    [[description appendText:@"is "] appendDescriptionOf:matcher];
+    [matcher describeMismatchOf:item to:mismatchDescription];
+}
+
+
+- (void)describeTo:(id<HCDescription>)description
+{
+    [description appendDescriptionOf:matcher];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_is(id matcherOrValue)
 {

@@ -1,6 +1,6 @@
 //
 //  OCHamcrest - HCIsDictionaryContaining.mm
-//  Copyright 2010 www.hamcrest.org. See LICENSE.txt
+//  Copyright 2011 hamcrest.org. See LICENSE.txt
 //
 //  Created by: Jon Reid
 //
@@ -10,21 +10,22 @@
 
     // OCHamcrest
 #import "HCDescription.h"
+#import "HCRequireNonNilObject.h"
 #import "HCWrapInMatcher.h"
 
 
 @implementation HCIsDictionaryContaining
 
-+ (HCIsDictionaryContaining*) isDictionaryContainingKey:(id<HCMatcher>)aKeyMatcher
-                                                  value:(id<HCMatcher>)aValueMatcher;
++ (id)isDictionaryContainingKey:(id<HCMatcher>)aKeyMatcher
+                          value:(id<HCMatcher>)aValueMatcher
 {
-    return [[[HCIsDictionaryContaining alloc]
+    return [[[self alloc]
                     initWithKeyMatcher:aKeyMatcher valueMatcher:aValueMatcher] autorelease];
 }
 
 
-- (id) initWithKeyMatcher:(id<HCMatcher>)aKeyMatcher
-             valueMatcher:(id<HCMatcher>)aValueMatcher;
+- (id)initWithKeyMatcher:(id<HCMatcher>)aKeyMatcher
+            valueMatcher:(id<HCMatcher>)aValueMatcher
 {
     self = [super init];
     if (self != nil)
@@ -36,7 +37,7 @@
 }
 
 
-- (void) dealloc
+- (void)dealloc
 {
     [valueMatcher release];
     [keyMatcher release];
@@ -45,7 +46,7 @@
 }
 
 
-- (BOOL) matches:(id)dict
+- (BOOL)matches:(id)dict
 {
     if ([dict isKindOfClass:[NSDictionary class]])
     {
@@ -59,20 +60,23 @@
 }
 
 
-- (void) describeTo:(id<HCDescription>)description
+- (void)describeTo:(id<HCDescription>)description
 {
-    [[[[[description appendText:@"dictionary containing ["]
-                    appendDescriptionOf:keyMatcher]
-                    appendText:@"->"]
-                    appendDescriptionOf:valueMatcher]
-                    appendText:@"]"];
+    [[[[[description appendText:@"a dictionary containing { "]
+                     appendDescriptionOf:keyMatcher]
+                     appendText:@" = "]
+                     appendDescriptionOf:valueMatcher]
+                     appendText:@"; }"];
 }
 
 @end
 
+//--------------------------------------------------------------------------------------------------
 
 OBJC_EXPORT id<HCMatcher> HC_hasEntry(id keyMatcher, id valueMatcher)
 {
+    HCRequireNonNilObject(keyMatcher);
+    HCRequireNonNilObject(valueMatcher);
     return [HCIsDictionaryContaining isDictionaryContainingKey:HCWrapInMatcher(keyMatcher)
                                                          value:HCWrapInMatcher(valueMatcher)];
 }
